@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>교육 문의</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-gradient-start: #1a1a2e;
+            --bg-gradient-end: #16213e;
+            --container-bg: rgba(255, 255, 255, 0.1);
+            --input-bg: rgba(255, 255, 255, 0.1);
+            --text-color: #fff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --border-color: rgba(255, 255, 255, 0.2);
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --focus-color: #667eea;
+        }
+
+        [data-theme="light"] {
+            --bg-gradient-start: #f5f7fa;
+            --bg-gradient-end: #e4e8ed;
+            --container-bg: rgba(255, 255, 255, 0.95);
+            --input-bg: rgba(255, 255, 255, 1);
+            --text-color: #1a1a2e;
+            --text-secondary: rgba(0, 0, 0, 0.6);
+            --border-color: rgba(0, 0, 0, 0.15);
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: background 0.3s ease;
+        }
+
+        .container {
+            padding: 40px;
+            background: var(--container-bg);
+            border-radius: 24px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px var(--shadow-color);
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        h1 {
+            color: var(--text-color);
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+            text-align: center;
+            transition: color 0.3s ease;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: var(--text-color);
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        label .required {
+            color: #ff6b6b;
+            margin-left: 3px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--input-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-color);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--focus-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: var(--text-secondary);
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+        }
+
+        select option {
+            background: var(--bg-gradient-start);
+            color: var(--text-color);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .privacy-notice {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .success-message {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .success-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .success-title {
+            color: var(--text-color);
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .success-desc {
+            color: var(--text-secondary);
+            margin-bottom: 25px;
+        }
+
+        .back-btn {
+            padding: 12px 30px;
+            background: transparent;
+            border: 2px solid var(--border-color);
+            color: var(--text-color);
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: var(--input-bg);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        [data-theme="light"] select option {
+            background: #fff;
+            color: #1a1a2e;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="theme-toggle" onclick="toggleTheme()" title="테마 변경">
+            <span id="theme-icon">☀️</span>
+        </button>
+
+        <div id="form-section">
+            <h1>📚 교육 문의</h1>
+            <p class="subtitle">궁금한 점이 있으시면 문의해 주세요</p>
+
+            <form id="contact-form" action="https://formspree.io/f/xkoogloj" method="POST">
+                <div class="form-group">
+                    <label>이름 <span class="required">*</span></label>
+                    <input type="text" name="name" placeholder="홍길동" required>
+                </div>
+
+                <div class="form-group">
+                    <label>이메일 <span class="required">*</span></label>
+                    <input type="email" name="email" placeholder="example@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label>연락처</label>
+                    <input type="tel" name="phone" placeholder="010-1234-5678">
+                </div>
+
+                <div class="form-group">
+                    <label>문의 유형 <span class="required">*</span></label>
+                    <select name="inquiry_type" required>
+                        <option value="" disabled selected>선택해주세요</option>
+                        <option value="개인교육">개인 교육</option>
+                        <option value="기업교육">기업 교육</option>
+                        <option value="온라인교육">온라인 교육</option>
+                        <option value="교육일정">교육 일정 문의</option>
+                        <option value="수강료">수강료 문의</option>
+                        <option value="기타">기타</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>문의 내용 <span class="required">*</span></label>
+                    <textarea name="message" placeholder="문의하실 내용을 입력해주세요" required></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submit-btn">문의하기</button>
+
+                <div class="privacy-notice">
+                    🔒 입력하신 개인정보는 문의 답변 목적으로만 사용되며, 답변 완료 후 안전하게 파기됩니다.
+                </div>
+            </form>
+        </div>
+
+        <div id="success-section" class="hidden">
+            <div class="success-message">
+                <div class="success-icon">✅</div>
+                <h2 class="success-title">문의가 접수되었습니다!</h2>
+                <p class="success-desc">빠른 시일 내에 답변 드리겠습니다.<br>감사합니다.</p>
+                <button class="back-btn" onclick="resetForm()">새 문의하기</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('contact-form');
+        const formSection = document.getElementById('form-section');
+        const successSection = document.getElementById('success-section');
+        const submitBtn = document.getElementById('submit-btn');
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = '전송 중...';
+
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: new FormData(form),
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    formSection.classList.add('hidden');
+                    successSection.classList.remove('hidden');
+                } else {
+                    throw new Error('전송 실패');
+                }
+            } catch (error) {
+                alert('문의 전송에 실패했습니다. 다시 시도해주세요.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = '문의하기';
+            }
+        });
+
+        function resetForm() {
+            form.reset();
+            formSection.classList.remove('hidden');
+            successSection.classList.add('hidden');
+            submitBtn.disabled = false;
+            submitBtn.textContent = '문의하기';
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+
+            if (html.getAttribute('data-theme') === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('contact-theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('contact-theme', 'dark');
+            }
+        }
+
+        (function() {
+            const savedTheme = localStorage.getItem('contact-theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            document.getElementById('theme-icon').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+        })();
+    </script>
+</body>
+</html>
