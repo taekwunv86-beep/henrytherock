@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>오늘 점심 어디서 먹지? - 역삼/선릉 맛집</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-gradient-start: #1a1a2e;
+            --bg-gradient-end: #16213e;
+            --container-bg: rgba(255, 255, 255, 0.1);
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --text-color: #fff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --border-color: rgba(255, 255, 255, 0.2);
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --star-color: #ffc107;
+        }
+
+        [data-theme="light"] {
+            --bg-gradient-start: #f5f7fa;
+            --bg-gradient-end: #e4e8ed;
+            --container-bg: rgba(255, 255, 255, 0.95);
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --text-color: #1a1a2e;
+            --text-secondary: rgba(0, 0, 0, 0.6);
+            --border-color: rgba(0, 0, 0, 0.1);
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: background 0.3s ease;
+        }
+
+        .container {
+            text-align: center;
+            padding: 40px;
+            background: var(--container-bg);
+            border-radius: 24px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px var(--shadow-color);
+            max-width: 600px;
+            width: 100%;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        h1 {
+            color: var(--text-color);
+            margin-bottom: 10px;
+            font-size: 2rem;
+            transition: color 0.3s ease;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+
+        .category-filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        .category-btn {
+            padding: 8px 16px;
+            border: 2px solid var(--border-color);
+            background: transparent;
+            color: var(--text-color);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .category-btn:hover,
+        .category-btn.active {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            border-color: transparent;
+            color: #fff;
+        }
+
+        .result-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border-color);
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .restaurant-name {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--text-color);
+            margin-bottom: 10px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .restaurant-category {
+            display: inline-block;
+            padding: 5px 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+        }
+
+        .restaurant-desc {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .rating {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .stars {
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+        }
+
+        .star {
+            color: #444;
+            transition: color 0.3s ease;
+        }
+
+        .star.filled {
+            color: var(--star-color);
+        }
+
+        .star.half {
+            background: linear-gradient(90deg, var(--star-color) 50%, #444 50%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .rating-number {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--star-color);
+        }
+
+        .restaurant-meta {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .recommend-btn {
+            padding: 18px 50px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(238, 90, 36, 0.4);
+        }
+
+        .recommend-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(238, 90, 36, 0.5);
+        }
+
+        .recommend-btn:active {
+            transform: translateY(0);
+        }
+
+        .placeholder {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .placeholder-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .shake {
+            animation: shake 0.5s ease;
+        }
+
+        .history {
+            margin-top: 25px;
+            text-align: left;
+        }
+
+        .history-title {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .history-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .history-item {
+            padding: 5px 12px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        [data-theme="light"] .star {
+            color: #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="theme-toggle" onclick="toggleTheme()" title="테마 변경">
+            <span id="theme-icon">☀️</span>
+        </button>
+
+        <h1>🍽️ 오늘 점심 어디서 먹지?</h1>
+        <p class="subtitle">역삼역 · 선릉역 주변 맛집 추천</p>
+
+        <div class="category-filter">
+            <button class="category-btn active" data-category="all">전체</button>
+            <button class="category-btn" data-category="korean">한식</button>
+            <button class="category-btn" data-category="japanese">일식</button>
+            <button class="category-btn" data-category="chinese">중식</button>
+            <button class="category-btn" data-category="western">양식</button>
+            <button class="category-btn" data-category="asian">아시안</button>
+        </div>
+
+        <div class="result-card" id="result">
+            <div class="placeholder">
+                <div class="placeholder-icon">🎲</div>
+                <p>버튼을 눌러 오늘의 점심을 추천받으세요!</p>
+            </div>
+        </div>
+
+        <button class="recommend-btn" onclick="recommend()">추천받기</button>
+
+        <div class="history" id="history-section" style="display: none;">
+            <p class="history-title">📋 최근 추천 기록</p>
+            <div class="history-list" id="history-list"></div>
+        </div>
+    </div>
+
+    <script>
+        const restaurants = [
+            // 한식
+            { name: "서울집", category: "korean", categoryName: "한식", desc: "손수 만든 만두와 칼국수. 깔끔한 국물이 일품인 추운 날 생각나는 맛집", rating: 4.3, price: "9,000원~", location: "역삼역 3분" },
+            { name: "복돈이 가마솥 순대국", category: "korean", categoryName: "한식", desc: "역삼역 센터필드 방향 최고의 순대국집. 진한 국물과 푸짐한 순대", rating: 4.4, price: "9,000원~", location: "역삼역 5분" },
+            { name: "갈비다움", category: "korean", categoryName: "한식", desc: "고기양 많고 국물 깔끔한 갈비탕 전문점", rating: 4.2, price: "13,000원~", location: "역삼역 4분" },
+            { name: "한우곰탕 전문점", category: "korean", categoryName: "한식", desc: "세종대왕 18대손 한의사 비법, 3대째 이어지는 깊은 육수의 곰탕", rating: 4.5, price: "12,000원~", location: "선릉역 5분" },
+            { name: "농민백암순대", category: "korean", categoryName: "한식", desc: "선릉역 대표 순대국 맛집. 담백하고 깔끔한 국물", rating: 4.6, price: "10,000원~", location: "선릉역 3분" },
+            { name: "호보식당", category: "korean", categoryName: "한식", desc: "숯불양념갈비 전문점. 바질, 할라피뇨, 고수 특제 소스의 마늘갈비", rating: 4.4, price: "15,000원~", location: "역삼역 5분" },
+            { name: "떡도리탕", category: "korean", categoryName: "한식", desc: "20년 전통! 닭볶음탕과 떡볶이의 환상 조합. 면사리 추가 필수", rating: 4.3, price: "12,000원~", location: "역삼역 6분" },
+            { name: "대우부대찌개", category: "korean", categoryName: "한식", desc: "직장인들의 든든한 한끼. 푸짐한 부대찌개 전문점", rating: 4.1, price: "9,000원~", location: "역삼역 4분" },
+            { name: "한방대가삼계탕", category: "korean", categoryName: "한식", desc: "넓고 쾌적한 공간에서 즐기는 닭볶음탕, 반계탕. 만원대 가성비", rating: 4.2, price: "11,000원~", location: "역삼역 7분" },
+            { name: "고불초쌈밥", category: "korean", categoryName: "한식", desc: "제육쌈밥 7천원! 푸짐한 제육에 신선한 채소, 몽글몽글 계란찜", rating: 4.0, price: "7,000원~", location: "역삼역 5분" },
+
+            // 일식
+            { name: "갓포돈", category: "japanese", categoryName: "일식", desc: "역삼에서 점심 줄이 가장 긴 돈까스 맛집. 바삭한 튀김이 일품", rating: 4.5, price: "12,000원~", location: "역삼역 3분" },
+            { name: "백초밥", category: "japanese", categoryName: "일식", desc: "가성비 끝판왕! 초밥과 튀김 모두 만족스러운 일식 맛집", rating: 4.3, price: "11,000원~", location: "역삼역 4분" },
+            { name: "호타루", category: "japanese", categoryName: "일식", desc: "점심 대기 필수인 인기 일식당. 신선한 재료와 정갈한 맛", rating: 4.4, price: "13,000원~", location: "선릉역 5분" },
+            { name: "언덕집", category: "japanese", categoryName: "일식", desc: "밀푀유나베 맛집. 우동사리, 볶음밥까지 배부른 코스", rating: 4.3, price: "14,000원~", location: "역삼역 6분" },
+            { name: "미도인 강남", category: "japanese", categoryName: "일식", desc: "셰프의 정성이 담긴 구첩반상과 400 등심 스테이크 덮밥", rating: 4.5, price: "15,000원~", location: "역삼역 5분" },
+
+            // 중식
+            { name: "팔백집", category: "chinese", categoryName: "중식", desc: "역삼 직장인 찐 맛집. 굵은 면발에 수란이 올라간 특별한 짜장면", rating: 4.2, price: "8,000원~", location: "역삼역 4분" },
+            { name: "홍콩반점", category: "chinese", categoryName: "중식", desc: "짬뽕, 잡채밥, 마파두부까지 뭘 시켜도 맛있는 중식당", rating: 4.1, price: "9,000원~", location: "선릉역 5분" },
+            { name: "마시찜 강남역점", category: "chinese", categoryName: "중식", desc: "런치 소갈비찜 8천원! 강남 가성비 점심의 정석", rating: 4.3, price: "8,000원~", location: "역삼역 7분" },
+
+            // 양식
+            { name: "바스버거", category: "western", categoryName: "양식", desc: "대기는 길지만 그만한 가치가 있는 수제버거 맛집", rating: 4.4, price: "12,000원~", location: "역삼역 5분" },
+            { name: "트라가", category: "western", categoryName: "양식", desc: "자연주의 스페인 요리. 재료 본연의 맛을 살린 정통 요리", rating: 4.5, price: "18,000원~", location: "역삼역 6분" },
+            { name: "후추포인트", category: "western", categoryName: "양식", desc: "스테이크와 파스타가 맛있는 양식 맛집", rating: 4.2, price: "14,000원~", location: "역삼역 4분" },
+            { name: "마늘오일 파스타집", category: "western", categoryName: "양식", desc: "마늘빵 무료 추가! 파스타 7,500원 가성비 맛집", rating: 4.0, price: "7,500원~", location: "역삼역 5분" },
+
+            // 아시안
+            { name: "쁘라텟타이", category: "asian", categoryName: "아시안", desc: "버릴 메뉴 없는 동남아 음식 최고봉. 모든 메뉴가 맛있음", rating: 4.6, price: "13,000원~", location: "역삼역 5분" },
+            { name: "소이연남 쌀국수", category: "asian", categoryName: "아시안", desc: "깔끔하고 진한 육수의 베트남 쌀국수 전문점", rating: 4.4, price: "10,000원~", location: "역삼역 4분" },
+            { name: "땀땀", category: "asian", categoryName: "아시안", desc: "인기 쌀국수 프랜차이즈. 안정적인 맛과 다양한 메뉴", rating: 4.2, price: "11,000원~", location: "선릉역 3분" },
+            { name: "케밥하우스", category: "asian", categoryName: "아시안", desc: "점심 세트 13,000원. 양 많아서 하나만 먹어도 배부름", rating: 4.1, price: "10,000원~", location: "역삼역 6분" },
+            { name: "틴틴", category: "asian", categoryName: "아시안", desc: "태국 음식 전문점. 팟타이와 똠양꿍이 인기", rating: 4.3, price: "12,000원~", location: "역삼역 5분" }
+        ];
+
+        let selectedCategory = 'all';
+        let history = [];
+
+        // 카테고리 버튼 이벤트
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                selectedCategory = this.dataset.category;
+            });
+        });
+
+        function getFilteredRestaurants() {
+            if (selectedCategory === 'all') return restaurants;
+            return restaurants.filter(r => r.category === selectedCategory);
+        }
+
+        function renderStars(rating) {
+            let stars = '';
+            const fullStars = Math.floor(rating);
+            const hasHalf = rating % 1 >= 0.3 && rating % 1 <= 0.7;
+            const halfStar = rating % 1 > 0.7 ? 0 : (hasHalf ? 1 : 0);
+
+            for (let i = 0; i < 5; i++) {
+                if (i < fullStars) {
+                    stars += '<span class="star filled">★</span>';
+                } else if (i === fullStars && (hasHalf || rating % 1 > 0.7)) {
+                    if (rating % 1 > 0.7) {
+                        stars += '<span class="star filled">★</span>';
+                    } else {
+                        stars += '<span class="star filled">★</span>';
+                    }
+                } else {
+                    stars += '<span class="star">★</span>';
+                }
+            }
+            return stars;
+        }
+
+        function recommend() {
+            const filtered = getFilteredRestaurants();
+            if (filtered.length === 0) {
+                alert('해당 카테고리에 식당이 없습니다.');
+                return;
+            }
+
+            const btn = document.querySelector('.recommend-btn');
+            btn.classList.add('shake');
+            setTimeout(() => btn.classList.remove('shake'), 500);
+
+            const random = Math.floor(Math.random() * filtered.length);
+            const restaurant = filtered[random];
+
+            // 히스토리에 추가
+            if (!history.includes(restaurant.name)) {
+                history.unshift(restaurant.name);
+                if (history.length > 5) history.pop();
+                updateHistory();
+            }
+
+            const resultCard = document.getElementById('result');
+            resultCard.innerHTML = `
+                <div class="restaurant-name">${restaurant.name}</div>
+                <span class="restaurant-category">${restaurant.categoryName}</span>
+                <p class="restaurant-desc">${restaurant.desc}</p>
+                <div class="rating">
+                    <div class="stars">${renderStars(restaurant.rating)}</div>
+                    <span class="rating-number">${restaurant.rating.toFixed(1)}</span>
+                </div>
+                <div class="restaurant-meta">
+                    <span class="meta-item">💰 ${restaurant.price}</span>
+                    <span class="meta-item">📍 ${restaurant.location}</span>
+                </div>
+            `;
+        }
+
+        function updateHistory() {
+            const section = document.getElementById('history-section');
+            const list = document.getElementById('history-list');
+
+            if (history.length > 0) {
+                section.style.display = 'block';
+                list.innerHTML = history.map(name =>
+                    `<span class="history-item">${name}</span>`
+                ).join('');
+            }
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+
+            if (html.getAttribute('data-theme') === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                localStorage.setItem('lunch-theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('lunch-theme', 'dark');
+            }
+        }
+
+        // 저장된 테마 불러오기
+        (function() {
+            const savedTheme = localStorage.getItem('lunch-theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            document.getElementById('theme-icon').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+        })();
+    </script>
+</body>
+</html>
